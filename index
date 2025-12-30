@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Personal Leo | App Fitness</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+:root{
+  --bg:#0f0a1f;
+  --card:#1a1233;
+  --primary:#7c3aed;
+  --secondary:#22c55e;
+  --accent:#ec4899;
+  --text:#f9fafb;
+  --muted:#a1a1aa;
+}
+
+body{
+  margin:0;
+  font-family:Segoe UI, Arial, sans-serif;
+  background:linear-gradient(180deg,#0f0a1f,#05020d);
+  color:var(--text);
+}
+
+/* SPLASH */
+#splash{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at top,var(--primary),#02010a);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  z-index:10;
+}
+
+#splash h1{font-size:32px}
+#splash p{max-width:320px;color:#e9d5ff}
+#splash button{
+  margin-top:20px;
+  padding:14px 28px;
+  border:none;
+  border-radius:30px;
+  background:linear-gradient(135deg,var(--secondary),#16a34a);
+  font-weight:bold;
+}
+
+/* APP */
+header{
+  padding:20px;
+  text-align:center;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  font-size:22px;
+  font-weight:bold;
+}
+
+main{
+  max-width:480px;
+  margin:auto;
+  padding:16px;
+}
+
+.card{
+  background:linear-gradient(160deg,var(--card),#0f0724);
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:18px;
+  box-shadow:0 10px 30px rgba(0,0,0,.6);
+}
+
+button{
+  width:100%;
+  padding:14px;
+  margin:8px 0;
+  border:none;
+  border-radius:14px;
+  font-size:15px;
+  font-weight:bold;
+  background:linear-gradient(135deg,var(--secondary),#16a34a);
+  color:#022c22;
+}
+
+button.alt{
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:white;
+}
+
+input,select{
+  width:100%;
+  padding:12px;
+  margin:6px 0;
+  border-radius:12px;
+  border:none;
+  background:#060014;
+  color:var(--text);
+}
+
+.price{
+  color:var(--secondary);
+  font-size:20px;
+  font-weight:bold;
+}
+
+.hidden{display:none}
+
+.result{
+  background:#060014;
+  padding:14px;
+  border-radius:12px;
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- PROPAGANDA -->
+<div id="splash">
+  <h1>🏋️ Personal Leo</h1>
+  <p>Treinos personalizados, simples e eficientes para alcançar resultados reais.</p>
+  <button onclick="entrar()">Entrar no App</button>
+</div>
+
+<header>🔥 App de Treinos</header>
+
+<main>
+
+<!-- MENU PRINCIPAL -->
+<div class="card">
+  <button onclick="togglePlanos()">📋 Ver todos os planos</button>
+  <button class="alt" onclick="toggleMedidas()">📏 Fazer minhas medidas</button>
+  <a href="https://wa.me/55981481953?text=Olá! Quero saber mais sobre os planos." target="_blank">
+    <button>💬 Falar no WhatsApp</button>
+  </a>
+</div>
+
+<!-- PLANOS -->
+<div id="planos" class="hidden">
+  <div class="card">
+    <h3>🔥 Emagrecimento Iniciante</h3>
+    <p>Ideal para quem está começando e quer perder peso.</p>
+    <div class="price">R$ 79</div>
+  </div>
+
+  <div class="card">
+    <h3>💪 Hipertrofia Intermediário</h3>
+    <p>Foco em ganho de massa muscular.</p>
+    <div class="price">R$ 99</div>
+  </div>
+
+  <div class="card">
+    <h3>⚡ Condicionamento Avançado</h3>
+    <p>Alta intensidade para melhorar performance.</p>
+    <div class="price">R$ 129</div>
+  </div>
+</div>
+
+<!-- MEDIDAS -->
+<div id="medidas" class="hidden">
+  <div class="card">
+    <h3>📏 Suas medidas</h3>
+
+    <input id="altura" type="number" placeholder="Altura (cm)">
+    <input id="peso" type="number" placeholder="Peso (kg)">
+    <input id="idade" type="number" placeholder="Idade">
+
+    <select id="objetivo">
+      <option>Emagrecer</option>
+      <option>Ganhar massa</option>
+      <option>Condicionamento</option>
+    </select>
+
+    <button onclick="recomendar()">Ver treino ideal</button>
+
+    <div id="resultado" class="result"></div>
+
+    <button class="alt" onclick="gerarPDF()">📄 Gerar PDF do treino</button>
+  </div>
+</div>
+
+</main>
+
+<script>
+let treinoFinal="";
+
+function entrar(){
+  document.getElementById("splash").style.display="none";
+}
+
+function togglePlanos(){
+  document.getElementById("planos").classList.toggle("hidden");
+}
+
+function toggleMedidas(){
+  document.getElementById("medidas").classList.toggle("hidden");
+}
+
+function recomendar(){
+  const altura=document.getElementById("altura").value/100;
+  const peso=document.getElementById("peso").value;
+  const objetivo=document.getElementById("objetivo").value;
+  const res=document.getElementById("resultado");
+
+  if(!altura||!peso){
+    res.innerHTML="⚠️ Preencha altura e peso.";
+    return;
+  }
+
+  const imc=(peso/(altura*altura)).toFixed(1);
+
+  treinoFinal="Condicionamento Avançado";
+  if(objetivo==="Emagrecer"||imc>=25) treinoFinal="Emagrecimento Iniciante";
+  if(objetivo==="Ganhar massa"&&imc<25) treinoFinal="Hipertrofia Intermediário";
+
+  res.innerHTML=`
+    📊 IMC: <strong>${imc}</strong><br><br>
+    🏋️ Treino ideal:<br>
+    <strong>${treinoFinal}</strong><br><br>
+    <a href="https://wa.me/55981481953?text=Olá! Fiz as medidas e quero o treino ${treinoFinal}." target="_blank">
+    <button>Confirmar no WhatsApp</button></a>
+  `;
+}
+
+function gerarPDF(){
+  if(!treinoFinal){
+    alert("Faça as medidas primeiro.");
+    return;
+  }
+
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF();
+
+  pdf.setFontSize(18);
+  pdf.text("Plano de Treino - Personal Leo",20,20);
+  pdf.setFontSize(12);
+  pdf.text(`Treino indicado: ${treinoFinal}`,20,40);
+  pdf.text("Gerado automaticamente pelo app.",20,55);
+
+  pdf.save("treino-personal-leo.pdf");
+}
+</script>
+
+</body>
+</html>
