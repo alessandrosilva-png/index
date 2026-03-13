@@ -1,248 +1,654 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Personal Leo | App Fitness</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Personal Leo</title>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <style>
-:root{
-  --bg:#0f0a1f;
-  --card:#1a1233;
-  --primary:#7c3aed;
-  --secondary:#22c55e;
-  --accent:#ec4899;
-  --text:#f9fafb;
-  --muted:#a1a1aa;
-}
 
 body{
-  margin:0;
-  font-family:Segoe UI, Arial, sans-serif;
-  background:linear-gradient(180deg,#0f0a1f,#05020d);
-  color:var(--text);
+margin:0;
+font-family:Segoe UI;
+background:#0f172a;
+color:white;
 }
 
-/* SPLASH */
-#splash{
-  position:fixed;
-  inset:0;
-  background:radial-gradient(circle at top,var(--primary),#02010a);
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-  z-index:10;
+.center{
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
 }
 
-#splash h1{font-size:32px}
-#splash p{max-width:320px;color:#e9d5ff}
-#splash button{
-  margin-top:20px;
-  padding:14px 28px;
-  border:none;
-  border-radius:30px;
-  background:linear-gradient(135deg,var(--secondary),#16a34a);
-  font-weight:bold;
+.login{
+background:#020617;
+padding:40px;
+border-radius:10px;
+width:320px;
+text-align:center;
 }
 
-/* APP */
-header{
-  padding:20px;
-  text-align:center;
-  background:linear-gradient(135deg,var(--primary),var(--accent));
-  font-size:22px;
-  font-weight:bold;
-}
-
-main{
-  max-width:480px;
-  margin:auto;
-  padding:16px;
-}
-
-.card{
-  background:linear-gradient(160deg,var(--card),#0f0724);
-  border-radius:18px;
-  padding:18px;
-  margin-bottom:18px;
-  box-shadow:0 10px 30px rgba(0,0,0,.6);
+input{
+width:100%;
+padding:10px;
+margin:6px 0;
+border-radius:6px;
+border:none;
 }
 
 button{
-  width:100%;
-  padding:14px;
-  margin:8px 0;
-  border:none;
-  border-radius:14px;
-  font-size:15px;
-  font-weight:bold;
-  background:linear-gradient(135deg,var(--secondary),#16a34a);
-  color:#022c22;
+padding:10px;
+border:none;
+border-radius:6px;
+background:#2563eb;
+color:white;
+cursor:pointer;
+margin-top:5px;
 }
 
-button.alt{
-  background:linear-gradient(135deg,var(--primary),var(--accent));
-  color:white;
+button:hover{
+background:#1d4ed8;
 }
 
-input,select{
-  width:100%;
-  padding:12px;
-  margin:6px 0;
-  border-radius:12px;
-  border:none;
-  background:#060014;
-  color:var(--text);
+.sidebar{
+position:fixed;
+left:0;
+top:0;
+width:220px;
+height:100%;
+background:#020617;
+padding-top:20px;
 }
 
-.price{
-  color:var(--secondary);
-  font-size:20px;
-  font-weight:bold;
+.sidebar h2{
+text-align:center;
 }
 
-.hidden{display:none}
-
-.result{
-  background:#060014;
-  padding:14px;
-  border-radius:12px;
-  margin-top:10px;
+.sidebar button{
+width:100%;
+background:none;
+padding:15px;
+text-align:left;
+color:white;
 }
+
+.sidebar button:hover{
+background:#1e293b;
+}
+
+.main{
+margin-left:220px;
+padding:30px;
+}
+
+.cards{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+}
+
+.card{
+background:#020617;
+padding:20px;
+border-radius:10px;
+margin-bottom:15px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+th{
+background:#1e293b;
+padding:10px;
+}
+
+td{
+padding:8px;
+border-bottom:1px solid #1e293b;
+text-align:center;
+}
+
+.hidden{
+display:none;
+}
+
 </style>
 </head>
 
 <body>
 
-<!-- PROPAGANDA -->
-<div id="splash">
-  <h1>🏋️ Personal Leo</h1>
-  <p>Treinos personalizados, simples e eficientes para alcançar resultados reais.</p>
-  <button onclick="entrar()">Entrar no App</button>
+<!-- LOGIN -->
+
+<div id="loginTela" class="center">
+
+<div class="login">
+
+<h2 onclick="abrirAdmin()" style="cursor:pointer">LOGIN</h2>
+
+<input id="loginEmail" placeholder="Email">
+<input id="loginSenha" type="password" placeholder="Senha">
+
+<button onclick="login()">Entrar</button>
+<button onclick="mostrarCadastro()">Criar conta</button>
+
 </div>
 
-<header>🔥 App de Treinos</header>
-
-<main>
-
-<!-- MENU PRINCIPAL -->
-<div class="card">
-  <button onclick="togglePlanos()">📋 Ver todos os planos</button>
-  <button class="alt" onclick="toggleMedidas()">📏 Fazer minhas medidas</button>
-  <a href="https://wa.me/55981481953?text=Olá! Quero saber mais sobre os planos." target="_blank">
-    <button>💬 Falar no WhatsApp</button>
-  </a>
 </div>
 
-<!-- PLANOS -->
-<div id="planos" class="hidden">
-  <div class="card">
-    <h3>🔥 Emagrecimento Iniciante</h3>
-    <p>Ideal para quem está começando e quer perder peso.</p>
-    <div class="price">R$ 79</div>
-  </div>
+<!-- CADASTRO -->
 
-  <div class="card">
-    <h3>💪 Hipertrofia Intermediário</h3>
-    <p>Foco em ganho de massa muscular.</p>
-    <div class="price">R$ 99</div>
-  </div>
+<div id="cadastroTela" class="center hidden">
 
-  <div class="card">
-    <h3>⚡ Condicionamento Avançado</h3>
-    <p>Alta intensidade para melhorar performance.</p>
-    <div class="price">R$ 129</div>
-  </div>
+<div class="login">
+
+<h2>Cadastrar</h2>
+
+<input id="cadNome" placeholder="Nome">
+<input id="cadEmail" placeholder="Email">
+<input id="cadSenha" placeholder="Senha">
+
+<button onclick="cadastrar()">Cadastrar</button>
+<button onclick="voltar()">Voltar</button>
+
 </div>
 
-<!-- MEDIDAS -->
-<div id="medidas" class="hidden">
-  <div class="card">
-    <h3>📏 Suas medidas</h3>
-
-    <input id="altura" type="number" placeholder="Altura (cm)">
-    <input id="peso" type="number" placeholder="Peso (kg)">
-    <input id="idade" type="number" placeholder="Idade">
-
-    <select id="objetivo">
-      <option>Emagrecer</option>
-      <option>Ganhar massa</option>
-      <option>Condicionamento</option>
-    </select>
-
-    <button onclick="recomendar()">Ver treino ideal</button>
-
-    <div id="resultado" class="result"></div>
-
-    <button class="alt" onclick="gerarPDF()">📄 Gerar PDF do treino</button>
-  </div>
 </div>
 
-</main>
+<!-- MENU ADMIN -->
+
+<div id="app" class="hidden">
+
+<div class="sidebar">
+
+<h2>Personal Leo</h2>
+
+<button onclick="dashboard()">Dashboard</button>
+<button onclick="verAlunos()">Alunos</button>
+<button onclick="verTreinos()">Treinos</button>
+<button onclick="logout()">Sair</button>
+
+</div>
+
+<div class="main">
+
+<div id="conteudo"></div>
+
+</div>
+
+</div>
+
+<!-- AREA ALUNO -->
+
+<div id="alunoTela" class="hidden main">
+
+<h2 id="nomeAluno"></h2>
+
+<input type="file" id="comprovante">
+
+<button onclick="enviarComprovante()">Enviar comprovante</button>
+
+<div id="status"></div>
+
+<div id="treinosAluno"></div>
+
+<button onclick="logout()">Sair</button>
+
+</div>
 
 <script>
-let treinoFinal="";
 
-function entrar(){
-  document.getElementById("splash").style.display="none";
+const SENHA_ADMIN="zinca26"
+
+let usuarios=JSON.parse(localStorage.getItem("usuarios"))||[]
+let treinos=JSON.parse(localStorage.getItem("treinos"))||[]
+
+let usuarioAtual=null
+
+function salvar(){
+localStorage.setItem("usuarios",JSON.stringify(usuarios))
+localStorage.setItem("treinos",JSON.stringify(treinos))
 }
 
-function togglePlanos(){
-  document.getElementById("planos").classList.toggle("hidden");
+/* LOGIN */
+
+function login(){
+
+let u=usuarios.find(x=>x.email==loginEmail.value && x.senha==loginSenha.value)
+
+if(!u){
+alert("Login inválido")
+return
 }
 
-function toggleMedidas(){
-  document.getElementById("medidas").classList.toggle("hidden");
+usuarioAtual=usuarios.find(x=>x.email==u.email)
+
+loginTela.classList.add("hidden")
+alunoTela.classList.remove("hidden")
+
+nomeAluno.innerHTML="Olá "+usuarioAtual.nome
+
+statusUsuario()
+mostrarTreinosAluno()
+
 }
 
-function recomendar(){
-  const altura=document.getElementById("altura").value/100;
-  const peso=document.getElementById("peso").value;
-  const objetivo=document.getElementById("objetivo").value;
-  const res=document.getElementById("resultado");
+/* ADMIN */
 
-  if(!altura||!peso){
-    res.innerHTML="⚠️ Preencha altura e peso.";
-    return;
-  }
+function abrirAdmin(){
 
-  const imc=(peso/(altura*altura)).toFixed(1);
+let senha=prompt("Senha admin")
 
-  treinoFinal="Condicionamento Avançado";
-  if(objetivo==="Emagrecer"||imc>=25) treinoFinal="Emagrecimento Iniciante";
-  if(objetivo==="Ganhar massa"&&imc<25) treinoFinal="Hipertrofia Intermediário";
+if(senha!=SENHA_ADMIN) return
 
-  res.innerHTML=`
-    📊 IMC: <strong>${imc}</strong><br><br>
-    🏋️ Treino ideal:<br>
-    <strong>${treinoFinal}</strong><br><br>
-    <a href="https://wa.me/55981481953?text=Olá! Fiz as medidas e quero o treino ${treinoFinal}." target="_blank">
-    <button>Confirmar no WhatsApp</button></a>
-  `;
+loginTela.classList.add("hidden")
+app.classList.remove("hidden")
+
+dashboard()
+
 }
 
-function gerarPDF(){
-  if(!treinoFinal){
-    alert("Faça as medidas primeiro.");
-    return;
-  }
+/* CADASTRO */
 
-  const {jsPDF}=window.jspdf;
-  const pdf=new jsPDF();
+function cadastrar(){
 
-  pdf.setFontSize(18);
-  pdf.text("Plano de Treino - Personal Leo",20,20);
-  pdf.setFontSize(12);
-  pdf.text(`Treino indicado: ${treinoFinal}`,20,40);
-  pdf.text("Gerado automaticamente pelo app.",20,55);
+usuarios.push({
+nome:cadNome.value,
+email:cadEmail.value,
+senha:cadSenha.value,
+comprovante:null,
+liberado:false
+})
 
-  pdf.save("treino-personal-leo.pdf");
+salvar()
+
+alert("Conta criada")
+
+voltar()
+
 }
+
+function mostrarCadastro(){
+loginTela.classList.add("hidden")
+cadastroTela.classList.remove("hidden")
+}
+
+function voltar(){
+cadastroTela.classList.add("hidden")
+loginTela.classList.remove("hidden")
+}
+
+/* DASHBOARD */
+
+function dashboard(){
+
+conteudo.innerHTML=`
+
+<h1>Dashboard</h1>
+
+<div class="cards">
+
+<div class="card">
+Alunos
+<h2>${usuarios.length}</h2>
+</div>
+
+<div class="card">
+Pagos
+<h2>${usuarios.filter(x=>x.liberado).length}</h2>
+</div>
+
+<div class="card">
+Treinos
+<h2>${treinos.length}</h2>
+</div>
+
+</div>
+
+`
+
+}
+
+/* COMPROVANTE */
+
+function verComprovante(img){
+let w=window.open("")
+w.document.write(`<img src="${img}" style="width:100%">`)
+}
+
+/* ALUNOS */
+
+function verAlunos(){
+
+let html=`
+
+<h1>Alunos</h1>
+
+<table>
+
+<tr>
+<th>Nome</th>
+<th>Email</th>
+<th>Comprovante</th>
+<th>Status</th>
+<th>Ações</th>
+</tr>
+
+`
+
+usuarios.forEach((u,i)=>{
+
+html+=`
+
+<tr>
+
+<td>${u.nome}</td>
+<td>${u.email}</td>
+
+<td>
+${u.comprovante
+? `<img src="${u.comprovante}" width="70" style="cursor:pointer" onclick="verComprovante('${u.comprovante}')">`
+: "Não enviado"}
+</td>
+
+<td>
+${u.liberado ? "Pago" : "Bloqueado"}
+</td>
+
+<td>
+
+<button onclick="toggleAluno(${i})">
+${u.liberado ? "Bloquear" : "Liberar"}
+</button>
+
+<button onclick="apagarAluno(${i})">
+Apagar
+</button>
+
+</td>
+
+</tr>
+
+`
+
+})
+
+html+="</table>"
+
+conteudo.innerHTML=html
+
+}
+
+function toggleAluno(i){
+
+usuarios[i].liberado=!usuarios[i].liberado
+
+salvar()
+
+verAlunos()
+
+}
+
+function apagarAluno(i){
+
+if(confirm("Apagar aluno?")){
+
+usuarios.splice(i,1)
+
+salvar()
+
+verAlunos()
+
+}
+
+}
+
+/* TREINOS */
+
+function verTreinos(){
+
+let html=`<h1>Treinos</h1>
+
+<button onclick="criarTreino()">Criar treino</button>
+
+`
+
+treinos.forEach((t,i)=>{
+
+html+=`
+
+<div class="card">
+
+<h3>${t.nome}</h3>
+
+<p>${t.explicacao}</p>
+
+<b>Preço: R$ ${t.preco}</b>
+
+<br><br>
+
+<button onclick="verTreino(${i})">Ver</button>
+<button onclick="apagarTreino(${i})">Apagar</button>
+
+</div>
+
+`
+
+})
+
+conteudo.innerHTML=html
+
+}
+
+function criarTreino(){
+
+let nome=prompt("Nome treino")
+let explicacao=prompt("Explicação")
+let preco=prompt("Preço")
+
+let dias={}
+
+for(let d of ["Segunda","Terça","Quarta","Quinta","Sexta"]){
+
+let lista=[]
+
+while(true){
+
+let ex=prompt(d+" exercício (cancelar para parar)")
+
+if(!ex) break
+
+let s=prompt("Séries")
+let r=prompt("Reps")
+
+lista.push({ex,s,r})
+
+}
+
+dias[d]=lista
+
+}
+
+treinos.push({nome,explicacao,preco,dias})
+
+salvar()
+
+verTreinos()
+
+}
+
+function apagarTreino(i){
+
+if(confirm("Apagar treino?")){
+
+treinos.splice(i,1)
+
+salvar()
+
+verTreinos()
+
+}
+
+}
+
+/* STATUS */
+
+function statusUsuario(){
+
+if(!usuarioAtual.comprovante)
+status.innerHTML="Envie comprovante"
+
+else if(!usuarioAtual.liberado)
+status.innerHTML="Aguardando liberação"
+
+else
+status.innerHTML="Pagamento aprovado"
+
+}
+
+/* COMPROVANTE */
+
+function enviarComprovante(){
+
+let file=comprovante.files[0]
+
+let reader=new FileReader()
+
+reader.onload=function(e){
+
+let usuario=usuarios.find(u=>u.email==usuarioAtual.email)
+
+usuario.comprovante=e.target.result
+
+usuarioAtual=usuario
+
+salvar()
+
+statusUsuario()
+
+alert("Comprovante enviado")
+
+}
+
+reader.readAsDataURL(file)
+
+}
+
+/* TREINOS ALUNO */
+
+function mostrarTreinosAluno(){
+
+let html="<h2>Treinos disponíveis</h2>"
+
+treinos.forEach((t,i)=>{
+
+html+=`
+
+<div class="card">
+
+<h3>${t.nome}</h3>
+
+<p>${t.explicacao}</p>
+
+<b>Preço: R$ ${t.preco}</b>
+
+<br><br>
+
+`
+
+if(usuarioAtual.liberado){
+
+html+=`<button onclick="pdf(${i})">Baixar PDF</button>`
+
+}else{
+
+html+=`<p style="color:#f87171">Treino bloqueado até pagamento</p>`
+
+}
+
+html+=`</div>`
+
+})
+
+treinosAluno.innerHTML=html
+
+}
+
+/* PDF TABELA */
+
+function pdf(i){
+
+if(!usuarioAtual.liberado){
+
+alert("Treino bloqueado")
+
+return
+
+}
+
+const {jsPDF}=window.jspdf
+
+let doc=new jsPDF()
+
+let t=treinos[i]
+
+let y=20
+
+doc.setFontSize(18)
+doc.text(t.nome,20,y)
+
+y+=10
+
+for(let d in t.dias){
+
+doc.setFontSize(14)
+doc.text(d,20,y)
+
+y+=6
+
+doc.setFontSize(12)
+
+doc.text("Exercício",20,y)
+doc.text("Séries",120,y)
+doc.text("Reps",160,y)
+
+y+=4
+
+doc.line(20,y,190,y)
+
+y+=6
+
+t.dias[d].forEach(e=>{
+
+doc.text(e.ex,20,y)
+doc.text(String(e.s),120,y)
+doc.text(String(e.r),160,y)
+
+y+=6
+
+})
+
+y+=8
+
+}
+
+doc.save("treino.pdf")
+
+}
+
+function logout(){
+location.reload()
+}
+
 </script>
 
 </body>
 </html>
+```
